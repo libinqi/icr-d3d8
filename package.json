@@ -1,11 +1,11 @@
 {
   "name": "icr-d3d8",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "D8 IC Card sdk for node addon",
   "main": "index.js",
   "gypfile": true,
   "scripts":{
-    "build": "node-gyp rebuild --arch=ia32 --msvs_version=2013",
+    "build": "node-gyp rebuild",
     "copy": "copy build\\Release\\DCRead.node bin\\DCRead.node",
     "install": "npm run build && npm run copy",
     "test": "node test.js"

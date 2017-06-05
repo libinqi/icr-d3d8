@@ -21,8 +21,6 @@ struct DelayBaton
     int status = 1;   // 状态1:正常，0：读取失败，-1：读取异常
 
     char *code = new char[19];       //身份证号码
-    DWORD interval = 0;
-    unsigned long cardsnr;
 };
 
 DelayBaton *baton;
@@ -109,19 +107,16 @@ void Delay(uv_work_t *req)
             int result = dc_card(icdev, 0, &cardsnr);
             if (result == 0)
             {
-                if (((GetTickCount() - baton->interval) > 500) ||
-                    (baton->cardsnr != cardsnr))
-                {
-                    baton->cardType = 2;
-                    sprintf(baton->code, "%2X", cardsnr);
-                    baton->status = 1;
-                    baton->async_request.data = baton;
-                    uv_async_send(&baton->async_request);
-                }
-
-                baton->interval = GetTickCount();
-                baton->cardsnr = cardsnr;
+				dc_halt(icdev);
+				
+				baton->cardType = 2;
+				sprintf(baton->code, "%2X", cardsnr);
+				baton->status = 1;
+				baton->async_request.data = baton;
+				uv_async_send(&baton->async_request);
             }
+			
+			Sleep(10);
         } while (baton->isRead);
     }
     catch (Exception)
@@ -243,4 +238,4 @@ void InitAll(Handle<Object> exports)
     DCRead::Init(exports);
 }
 
-NODE_MODULE(DCRead, InitAll)
+NODE_MODULE(DCRead, InitAll);
